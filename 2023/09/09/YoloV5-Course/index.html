@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  
+  <meta name="keywords" content="朔月离">
+  <meta name="description" content="朔月离的小站">
+  
+  <title>朔月离的小屋</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="/css/materialize.min.css">
+    
+      <link rel="stylesheet" href="/css/main.min.css">
+    
+  
+  <style type="text/css">
+      html{
+          font-family: sans-serif;
+          font-weight: 300;
+      }
+      @font-face {
+          font-family: 'Material Icons';
+          font-style: normal;
+          font-weight: 400;
+          src: url(/fonts/MaterialIcons-Regular.eot);
+          src: url(/fonts/MaterialIcons-Regular.woff2) format('woff2'),
+          url(/fonts/MaterialIcons-Regular.woff) format('woff'),
+          url(/fonts/MaterialIcons-Regular.ttf) format('truetype')
+      }
+  </style>
+<link rel="shortcut icon" href="keli.jpeg">
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body>
+<div id="menu-box"><a href="javascript:void(0)" id="menu" data-activates="slide-out" class="button-collapse menu" ><span class="nav-btn"></span></a></div>
+<div id="menu-outer">
+  <div id="menu-inner">
+      <ul id="slide-out" class="side-nav" >
+    <div class="nav-header"  style="background-image: url(/images/header-bg.png);background-color:#26A69A">
+    <div class="header-box"><img src="/images/typec.jpeg" ondragstart="return false;"></div>
+    <p>朔月离</p>
+    <div class="nav-link">
+        
+        <a href="http://example.com" target="_blank"> <div class="link-box twitter"></div></a>
+        
+        
+        <a  href="https://github.com/shuoyueli4519" target="_blank"><div class="link-box github"></div></a>
+        
+        
+        <a href="mailto:http://example.com"><div class="link-box email"></div></a>
+        
+        
+        <a href="http://example.com" target="_blank"><div class="link-box weibo"></div></a>
+        
+        
+        <a href="http://example.com" target="_blank"> <div class="link-box zhihu"></div></a>
+        
+    </div>
+    <div class="nav-search">
+        <form id="search-form"> <!-- 搜索框相关 -->
+            <input type="text" id="local-search-input" name="q" results="0" placeholder="搜索..." class="search form-control" autocomplete="off" autocorrect="off"/>
+            <div class="nav-search-img"><i class="material-icons">search</i></div>
+        </form>
+        <div id="local-search-result"></div> <!-- 搜索结果区 -->
+        <p class='no-result'>无搜索结果</p>
+    </div>
+</div>
+    <!--Homepage-->
+
+<li class="nav-list">
+    <a href="/" target="_self">
+        <div class="nav-ico"><i class="material-icons">home</i> </div><p>主页</p>
+    </a>
+</li>
+
+<!--archives-->
+
+<li class="nav-list dropdown-btn">
+    <a  class=""  target="_self">
+        <div class="nav-ico"><i class="material-icons">assignment</i></div><p>归档</p><div class="dropdown-ico"><i class="material-icons">arrow_drop_down</i></div>
+    </a>
+</li>
+
+<ul class="dropdown-menu dropdown" >
+    <li class="nav-dropdown-list">
+        <a class="archive-link" href="/archives/2023/09/">September 2023<span class="archive-count">4</span></a>
+    </li>
+</ul>
+<!--categories-->
+
+<ul class="dropdown-menu dropdown" >
+    <li class="nav-dropdown-list">
+        
+    </li>
+</ul>
+<!--tags-->
+
+<li class="nav-list">
+    <a href="/archives" target="_self">
+        <div class="nav-ico"><i class="material-icons">bookmark</i> </div><p>标签</p>
+    </a>
+</li>
+
+<!--photo-->
+
+<!--friends-->
+
+<!--about-->
+
+
+</ul>
+
+  </div>
+</div>
+
+<div id="content-outer">
+  <div id="content-inner">
+    
+<article id="post">
+  <div class="post-page-title"  style="background-color:#26A69A;background-image:url(/images/random/vateral-19.png)" >
+  <h2></h2>
+    
+  <p>作者:朔月离 &nbsp&nbsp 发布于:<time datetime="2023-09-09T11:53:34.069Z">
+          2023-09-09
+    </time>
+  </p>
+    
+  </div>
+  <div class="post-page-content">
+  <h1 id="YoloV5使用教程"><a href="#YoloV5使用教程" class="headerlink" title="YoloV5使用教程"></a>YoloV5使用教程</h1><h2 id="主要步骤"><a href="#主要步骤" class="headerlink" title="主要步骤"></a>主要步骤</h2><ul>
+<li>配置基本Yolo环境</li>
+<li>在Roboflow上制作数据集</li>
+<li>根据预训练好的yolov5&#x2F;models&#x2F;yolov5s.yaml和收集的数据集制作.pt模型</li>
+<li>将.pt格式模型转化为.onnx模型</li>
+<li>用OnnxLoader.py加载模型并进行预测标注</li>
+</ul>
+<h2 id="步骤详解"><a href="#步骤详解" class="headerlink" title="步骤详解"></a>步骤详解</h2><h3 id="配置基本Yolo环境"><a href="#配置基本Yolo环境" class="headerlink" title="配置基本Yolo环境"></a>配置基本Yolo环境</h3><ul>
+<li>去yolov5官网下下载文件至该文件夹下，anaconda新建空的虚拟环境，进入新的虚拟环境，在yolov5路径下输入命令<strong>pip install -r requirements.txt</strong>安装Yolo依赖，<strong>pip install onnx onnxruntime</strong>安装Onnx依赖</li>
+</ul>
+<h3 id="在Roboflow上制作数据集"><a href="#在Roboflow上制作数据集" class="headerlink" title="在Roboflow上制作数据集"></a>在Roboflow上制作数据集</h3><ul>
+<li>使用Roboflow在线标注数据集<a target="_blank" rel="noopener" href="https://roboflow.com/?ref=ultralytics%EF%BC%8C%E5%AF%BC%E5%87%BA%E6%A0%87%E6%B3%A8%E5%A5%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%B0yolov5%E8%B7%AF%E5%BE%84%E4%B8%8B">https://roboflow.com/?ref=ultralytics，导出标注好的数据集到yolov5路径下</a></li>
+</ul>
+<h3 id="制作模型"><a href="#制作模型" class="headerlink" title="制作模型"></a>制作模型</h3><ul>
+<li>python train.py –img 640 –batch 16 –epoch 100 –data First&#x2F;data.yaml –cfg models&#x2F;yolov5s.yaml –weights yolov5s.pt <strong>(其中First&#x2F;data.yaml替换为自己数据集的.yaml配置文件路径，而且打开.yaml文件修改训练集、测试集和验证集路径保证它们能被找到，batchsize别太大，量电脑力而行，别折磨电脑)</strong></li>
+<li>训练完的模型储存在yolov5&#x2F;runs&#x2F;exp&#x2F;train&#x2F;weights中</li>
+</ul>
+<h3 id="格式转化"><a href="#格式转化" class="headerlink" title="格式转化"></a>格式转化</h3><ul>
+<li>python export.py –weights .&#x2F;runs&#x2F;exp&#x2F;train&#x2F;weights&#x2F;best.pt –include onnx engine –img 640转化完成模型格式</li>
+</ul>
+<h3 id="模型部署预测"><a href="#模型部署预测" class="headerlink" title="模型部署预测"></a>模型部署预测</h3><ul>
+<li>将.onnx模型拷贝到ONNX文件夹中，待预测的图片放在Data中，执行OnnxLoader.py，如果有特定需求改源码即可</li>
+</ul>
+<h3 id="尝试merge操作"><a href="#尝试merge操作" class="headerlink" title="尝试merge操作"></a>尝试merge操作</h3>
+  </div>
+  <!--评论块-->
+    
+
+</article>
+<nav class="post-nav">
+  <!-- Prev Nav -->
+    
+  <a href="/2023/09/11/Swapon/" id="post_nav-newer" class="post-nav-content prev-content">
+      新篇
+  </a>
+    
+
+
+  <!-- Next Nav -->
+    
+  <a href="/2023/09/09/RoboGameUI/" id="post_nav-older" class="post-nav-content next-content">
+      旧篇
+  </a>
+    
+</nav>
+<div class="post-toc-btn"><i class="material-icons">format_list_numbered</i></div>
+<div class="post-toc-none"><p>(无)</p></div>
+<div class="post-toc-box">
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#YoloV5%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="post-toc-number">1.</span> <span class="post-toc-text">YoloV5使用教程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%B8%BB%E8%A6%81%E6%AD%A5%E9%AA%A4"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">主要步骤</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%AD%A5%E9%AA%A4%E8%AF%A6%E8%A7%A3"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">步骤详解</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E9%85%8D%E7%BD%AE%E5%9F%BA%E6%9C%ACYolo%E7%8E%AF%E5%A2%83"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">配置基本Yolo环境</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%9C%A8Roboflow%E4%B8%8A%E5%88%B6%E4%BD%9C%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">在Roboflow上制作数据集</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%88%B6%E4%BD%9C%E6%A8%A1%E5%9E%8B"><span class="post-toc-number">1.2.3.</span> <span class="post-toc-text">制作模型</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A0%BC%E5%BC%8F%E8%BD%AC%E5%8C%96"><span class="post-toc-number">1.2.4.</span> <span class="post-toc-text">格式转化</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E9%A2%84%E6%B5%8B"><span class="post-toc-number">1.2.5.</span> <span class="post-toc-text">模型部署预测</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%B0%9D%E8%AF%95merge%E6%93%8D%E4%BD%9C"><span class="post-toc-number">1.2.6.</span> <span class="post-toc-text">尝试merge操作</span></a></li></ol></li></ol></li></ol>
+</div>
+<!--<div class="post-back"><i class="material-icons">arrow_back</i></div>-->
+<script type="text/javascript">
+    menu();
+</script>
+  </div>
+</div>
+<div id="bottom-outer">
+  <div id="bottom-inner">
+    <a  id="top-button" onfocus="this.blur();"><div class="up upinbody" style="background-color:#26A69A"><i class="material-icons material-up">vertical_align_top</i></div></a>
+
+
+<p >Copyright ©  2017  朔月离的小屋</p>
+<p >Powered by <a href="https://hexo.io/" target="_blank"> Hexo </a> & Theme - <a href="https://github.com/moumao/hexo-theme-Vateral" target="_blank">Vateral</a></p>
+<p style="font-size: 10px" id="footer-times" data-time="1/1/2017 00:00:00"></p>
+<script>
+    var beginTime=document.getElementById("footer-times").dataset.time
+    function show_date_time(){
+        var span=document.getElementById("footer-times")
+        window.setTimeout("show_date_time()", 1000);
+        BirthDay=new Date(beginTime);//初始日期
+        today=new Date();
+        timeold=(today.getTime()-BirthDay.getTime());
+        sectimeold=timeold/1000
+        secondsold=Math.floor(sectimeold);
+        msPerDay=24*60*60*1000
+        e_daysold=timeold/msPerDay
+        daysold=Math.floor(e_daysold);
+        e_hrsold=(e_daysold-daysold)*24;
+        hrsold=Math.floor(e_hrsold);
+        e_minsold=(e_hrsold-hrsold)*60;
+        minsold=Math.floor((e_hrsold-hrsold)*60);
+        seconds=Math.floor((e_minsold-minsold)*60);
+        span.innerHTML="本站已运行"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+    }
+    show_date_time();
+</script>
+
+  </div>
+</div>
+
+<!--影集界面需要的资源-->
+
+
+
+<!-- scripts list from theme config.yml -->
+
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+<script src="/js/materialize.min.js"></script>
+
+<script src="/js/main.min.js"></script>
+
+
+<script>
+    NProgress.start();
+    NProgress.done();
+    lazy();
+    links();
+    window.onpopstate = menu();
+    //pjax操作
+    $(document).pjax('a:not(.nopjax)', '#content-inner', {fragment:'#content-inner', timeout:8000});
+    $(document).on('pjax:start', NProgress.start).on('pjax:end', NProgress.done)
+        .on('pjax:end', () => {
+            dowmdiv();
+            lazy();
+            toc();
+            links();
+            menu();
+        });
+</script>
+
+</body>
+</html>

@@ -118,224 +118,72 @@
 <div id="content-outer">
   <div id="content-inner">
     
-<div class="post-header" style="background-image:url(/images/coverpic.png);background-color:#26A69A ">
-    <a  href="http://example.com"  >
-        <div class="post-header-title">
-            <p style="">
-                
-                
-                项目详情点击左侧github图标查看
-                
-                
-                <br>
-                
-            </p>
-        </div>
-    </a>
-</div>
-<div class="post-author">
-    <div class="post-author-img"><img src="/images/typec.jpeg" ondragstart="return false;"></div>
-    <p class="post-author-name">朔月离</p>
-    <div class="post-author-button"  target="_self"><i class="material-icons"  target="_self" style="font-size: 20px">share</i></div>
-    <div class="post-author-link"><ul>
-            <p>分享到：</p>
-            <li><a href="http://v.t.sina.com.cn/share/share.php?url=http://example.com&title=朔月离的小屋" target="_blank">新浪微博</a></li>
-            <li><a href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://example.com" target="_blank">QQ空间</a></li>
-            <li><a href="http://connect.qq.com/widget/shareqq/index.html?title=qqhaoyou&url=http://example.com &desc= 朔月离的小屋" target="_blank">QQ好友</a></li>
-        </ul></div>
-</div>
-
-
-<div id="recent-posts">
+<article id="post">
+  <div class="post-page-title"  style="background-color:#26A69A;background-image:url(/images/random/vateral-11.png)" >
+  <h2></h2>
     
+  <p>作者:朔月离 &nbsp&nbsp 发布于:<time datetime="2023-09-11T09:05:46.358Z">
+          2023-09-11
+    </time>
+  </p>
     
+  </div>
+  <div class="post-page-content">
+  <h1 id="Ubuntu下Swapon大小设置"><a href="#Ubuntu下Swapon大小设置" class="headerlink" title="Ubuntu下Swapon大小设置"></a>Ubuntu下Swapon大小设置</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo swapoff /swapfile </span><br></pre></td></tr></table></figure>
+<ul>
+<li>将swapfile进程关闭以保证能够修改swapfile文件<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fallocate -l 4G(自定义的分区大小) /swapfile</span><br></pre></td></tr></table></figure></li>
+<li>设置交换分区大小为4G</li>
+</ul>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 600 /swapfile</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>权限表示:<br>r (读权限)：表示可以读取文件或查看目录内容。<br>w (写权限)：表示可以修改文件或目录，包括新增、编辑、删除文件或目录。<br>x (执行权限)：对于文件，表示可以执行该文件作为程序；对于目录，表示可以进入该目录。</p>
+</li>
+<li><p>权限级别:<br>用户（owner）：文件或目录的所有者。<br>组（group）：用户所属的组。<br>其他用户（others）：不属于用户和组的其他所有用户。</p>
+</li>
+<li><p>权限数字表示:<br>r (读权限)：4<br>w (写权限)：2<br>x (执行权限)：1</p>
+</li>
+<li><p>chmod 命令的用法:<br>chmod 600 file.txt：将文件 file.txt 的权限设置为 -rw-none-none-，即仅文件所有者具有读和写权限。<br>chmod 777 directory：将目录 directory 的权限设置为 rwxrwxrwx，即所有用户都具有读、写和执行权限。</p>
+</li>
+</ul>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mkswap /swapfile</span><br></pre></td></tr></table></figure>
+<ul>
+<li>标注swapon交换区域</li>
+</ul>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo swapon /swapfile</span><br></pre></td></tr></table></figure>
+<ul>
+<li>激活swapon交换区域</li>
+</ul>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo swapon --show</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看swapon区域是否成功修改并激活</li>
+</ul>
+
+  </div>
+  <!--评论块-->
     
+
+</article>
+<nav class="post-nav">
+  <!-- Prev Nav -->
     
+
+
+  <!-- Next Nav -->
     
+  <a href="/2023/09/09/YoloV5-Course/" id="post_nav-older" class="post-nav-content next-content">
+      旧篇
+  </a>
     
-    
-    
-    
-  
-    
-      <div class="recent-post-item lazy"style="background-color:#26A69A"  data-original="/images/random/vateral-2.png"  >
-        <a class="recent-post-link" href="/2023/09/11/Swapon/">
-        <div class="post-hover">
-          <!--title-->
-          <p class="post-title"><a href="/2023/09/11/Swapon/" ></a></p>
-
-          <!--date-->
-          
-            <p class="post-time">朔月离 &nbsp &nbsp 发布于:<time datetime="2023-09-11T09:05:46.358Z">
-              2023-09-11
-            </time>
-            </p>
-          
-
-          <!--tags-->
-
-          标签:
-            
-              暂无标签
-            
-          <!--分类-->
-
-          分类:
-            
-                暂无分类
-            
-
-          <!--excerpt-->
-          <div class="post-excerpt">
-            <p>
-              摘要：
-              
-                Ubuntu下Swapon大小设置
-              
-            </p>
-          </div>
-          <div class="post-more"><a href="/2023/09/11/Swapon/" >全文阅读</a></div>
-        </div>
-        </a>
-      </div>
-    
-  
-    
-      <div class="recent-post-item lazy"style="background-color:#26A69A"  data-original="/images/random/vateral-14.png"  >
-        <a class="recent-post-link" href="/2023/09/09/YoloV5-Course/">
-        <div class="post-hover">
-          <!--title-->
-          <p class="post-title"><a href="/2023/09/09/YoloV5-Course/" ></a></p>
-
-          <!--date-->
-          
-            <p class="post-time">朔月离 &nbsp &nbsp 发布于:<time datetime="2023-09-09T11:53:34.069Z">
-              2023-09-09
-            </time>
-            </p>
-          
-
-          <!--tags-->
-
-          标签:
-            
-              暂无标签
-            
-          <!--分类-->
-
-          分类:
-            
-                暂无分类
-            
-
-          <!--excerpt-->
-          <div class="post-excerpt">
-            <p>
-              摘要：
-              
-                YoloV5使用教程主要步骤
-              
-            </p>
-          </div>
-          <div class="post-more"><a href="/2023/09/09/YoloV5-Course/" >全文阅读</a></div>
-        </div>
-        </a>
-      </div>
-    
-  
-    
-      <div class="recent-post-item lazy"style="background-color:#26A69A"  data-original="/images/random/vateral-15.png"  >
-        <a class="recent-post-link" href="/2023/09/09/RoboGameUI/">
-        <div class="post-hover">
-          <!--title-->
-          <p class="post-title"><a href="/2023/09/09/RoboGameUI/" ></a></p>
-
-          <!--date-->
-          
-            <p class="post-time">朔月离 &nbsp &nbsp 发布于:<time datetime="2023-09-09T11:53:21.757Z">
-              2023-09-09
-            </time>
-            </p>
-          
-
-          <!--tags-->
-
-          标签:
-            
-              暂无标签
-            
-          <!--分类-->
-
-          分类:
-            
-                暂无分类
-            
-
-          <!--excerpt-->
-          <div class="post-excerpt">
-            <p>
-              摘要：
-              
-                2023RoboGame UI 设计
-              
-            </p>
-          </div>
-          <div class="post-more"><a href="/2023/09/09/RoboGameUI/" >全文阅读</a></div>
-        </div>
-        </a>
-      </div>
-    
-  
-    
-      <div class="recent-post-item lazy"style="background-color:#26A69A"  data-original="/images/random/vateral-10.png"  >
-        <a class="recent-post-link" href="/2023/09/09/CNN-Cifar10/">
-        <div class="post-hover">
-          <!--title-->
-          <p class="post-title"><a href="/2023/09/09/CNN-Cifar10/" ></a></p>
-
-          <!--date-->
-          
-            <p class="post-time">朔月离 &nbsp &nbsp 发布于:<time datetime="2023-09-09T11:51:20.719Z">
-              2023-09-09
-            </time>
-            </p>
-          
-
-          <!--tags-->
-
-          标签:
-            
-              暂无标签
-            
-          <!--分类-->
-
-          分类:
-            
-                暂无分类
-            
-
-          <!--excerpt-->
-          <div class="post-excerpt">
-            <p>
-              摘要：
-              
-                项目名称:PytorchCifar10
-              
-            </p>
-          </div>
-          <div class="post-more"><a href="/2023/09/09/CNN-Cifar10/" >全文阅读</a></div>
-        </div>
-        </a>
-      </div>
-    
-  
-  <nav class="paging">
-    <span class="page-number current">1</span>
 </nav>
+<div class="post-toc-btn"><i class="material-icons">format_list_numbered</i></div>
+<div class="post-toc-none"><p>(无)</p></div>
+<div class="post-toc-box">
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#Ubuntu%E4%B8%8BSwapon%E5%A4%A7%E5%B0%8F%E8%AE%BE%E7%BD%AE"><span class="post-toc-number">1.</span> <span class="post-toc-text">Ubuntu下Swapon大小设置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%AD%A5%E9%AA%A4"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">步骤</span></a></li></ol></li></ol>
 </div>
-
-
-
+<!--<div class="post-back"><i class="material-icons">arrow_back</i></div>-->
+<script type="text/javascript">
+    menu();
+</script>
   </div>
 </div>
 <div id="bottom-outer">
