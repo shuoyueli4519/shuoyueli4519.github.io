@@ -119,13 +119,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -147,6 +147,110 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="朔月离">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" class="post-title-link" itemprop="url">VAE阅读日记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-07-21 16:26:17" itemprop="dateCreated datePublished" datetime="2024-07-21T16:26:17+08:00">2024-07-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-22 12:34:53" itemprop="dateModified" datetime="2024-07-22T12:34:53+08:00">2024-07-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/VAE%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">VAE系列</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="VAE的基本介绍"><a href="#VAE的基本介绍" class="headerlink" title="VAE的基本介绍"></a>VAE的基本介绍</h2><p>VAE论文为<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114">VAE:Auto-Encoding Variational Bayes</a>，即变分自编码器，核心思想是学习一个解码器使得潜在正态分布q(z|x)能通过解码器尽可能地还原回真实样本x，此时取样潜在分布z’并通过解码器能生成未知样本x’，整个网络结构就是由编解码器组成，编码器的输出是两个d维向量，每一对值代表均值-方差对，然后通过重新采样并解码得到重建后的图像。</p>
+<p><img src="/pic/2024-07-22_12-28.png" alt="2024-07-22_12-28"></p>
+<h3 id="几个关键问题"><a href="#几个关键问题" class="headerlink" title="几个关键问题:"></a>几个关键问题:</h3><ul>
+<li><p>Q:为什么对于Decoder的输入要进行采样?</p>
+</li>
+<li><p>A:因为当不进行采样时，整个VAE相当于AE，即潜在空间表示z恒为定值而不是一个区间，那么在生成时选择的潜在空间向量z’容易落在学习到的潜在空间表示之外，导致生成的结果质量差，可以认为目的是扩大每一个已知样本潜在空间表示的范围，将其从一个定值变为一个区间。<br/></p>
+<p><img src="/pic/2024-07-22_09-15.png" alt="images"></p>
+</li>
+<li><p>Q:为什么要选择使用重参数化采样?</p>
+</li>
+<li><p>A:如果直接使用采样，即按照均值$\mu$和方差$\sigma$的正态分布进行随机抽样的话，无法对Encoder部分进行方向传播更新参数，所以采用重参数化的方式，即$\mu$+$\sigma$*$\delta$的方式，其中$\delta$为已知的随机抽样取值，那么可以利用链式法则对参数进行更新。<br/></p>
+</li>
+<li><p>Q:为什么要有KL散度这一项作为损失函数的一部分?</p>
+</li>
+<li><p>A:对于只有MSE均方误差作为损失函数的情况，VAE在不断训练的情况下$\sigma$会不断趋于0来减少损失，此时VAE的训练结果会不断向AE靠近，那么就需要KL散度这一项防止这种情况的发生，同时至于为什么要和标准正态分布计算KL散度的原因是在生成过程中对潜在空间向量z’的抽样取值是对标准正态分布进行，所以需要和标准正态分布计算KL散度。</p>
+</li>
+</ul>
+<h3 id="VAE公式推导"><a href="#VAE公式推导" class="headerlink" title="VAE公式推导"></a>VAE公式推导</h3><p>利用最大似然函数的思想，将真实样本数据记作$ x^1 x^2 x^3 … x^n $，产生指定图片x的概率为p(x)，编码器将图片x编码为z的概率为q(z|x)，解码器将潜在空间向量z解码为指定图片x的概率为p(x|z)，p(z|x)为真实后验分布，即对于真实样本数据x，潜在空间向量z的分布情况，但p(z|x)不可知，p(z)为人为假设的潜在空间向量z的先验分布，为了生成时方便所以取标准正态分布，但根据不同的情况可以取其它的先验分布。</p>
+<p>$\begin{flalign}logp(x)&amp;=\int_{z}q(z|x)logp(x)dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)}\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+\int_{z}q(z|x)log(\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x|z)p(z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(z)}{q(z|x)})dz+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\\end{flalign}$</p>
+<p>由于KL散度一定大于0，且p(z|x)不可知，所以$KL(q(z|x)||p(z|x))$并没有加入到损失函数中去，最大似然只去优化$-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz$，此时前一项是让编码器的输出靠近标准正态分布，后一项是让解码器输出指定x的概率尽可能大，所以整个损失函数可以定为KL散度($\frac{1}{2}\sum_{i=1}^{d}(\mu_i^2+\sigma_i^2-log\sigma_i^2-1)$)和MSE均方误差的和。</p>
+<h2 id="VAE人脸生成代码实现"><a href="#VAE人脸生成代码实现" class="headerlink" title="VAE人脸生成代码实现"></a>VAE人脸生成代码实现</h2>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -287,6 +391,12 @@
   
 
 
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
 
 
 
