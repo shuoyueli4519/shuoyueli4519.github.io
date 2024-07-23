@@ -192,7 +192,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-22 12:34:53" itemprop="dateModified" datetime="2024-07-22T12:34:53+08:00">2024-07-22</time>
+      <time title="Modified: 2024-07-23 15:52:26" itemprop="dateModified" datetime="2024-07-23T15:52:26+08:00">2024-07-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -234,7 +234,11 @@
 <h3 id="VAE公式推导"><a href="#VAE公式推导" class="headerlink" title="VAE公式推导"></a>VAE公式推导</h3><p>利用最大似然函数的思想，将真实样本数据记作$ x^1 x^2 x^3 … x^n $，产生指定图片x的概率为p(x)，编码器将图片x编码为z的概率为q(z|x)，解码器将潜在空间向量z解码为指定图片x的概率为p(x|z)，p(z|x)为真实后验分布，即对于真实样本数据x，潜在空间向量z的分布情况，但p(z|x)不可知，p(z)为人为假设的潜在空间向量z的先验分布，为了生成时方便所以取标准正态分布，但根据不同的情况可以取其它的先验分布。</p>
 <p>$\begin{flalign}logp(x)&amp;=\int_{z}q(z|x)logp(x)dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)}\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+\int_{z}q(z|x)log(\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x|z)p(z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(z)}{q(z|x)})dz+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\\end{flalign}$</p>
 <p>由于KL散度一定大于0，且p(z|x)不可知，所以$KL(q(z|x)||p(z|x))$并没有加入到损失函数中去，最大似然只去优化$-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz$，此时前一项是让编码器的输出靠近标准正态分布，后一项是让解码器输出指定x的概率尽可能大，所以整个损失函数可以定为KL散度($\frac{1}{2}\sum_{i=1}^{d}(\mu_i^2+\sigma_i^2-log\sigma_i^2-1)$)和MSE均方误差的和。</p>
-<h2 id="VAE人脸生成代码实现"><a href="#VAE人脸生成代码实现" class="headerlink" title="VAE人脸生成代码实现"></a>VAE人脸生成代码实现</h2>
+<h2 id="VAE人脸生成代码实现"><a href="#VAE人脸生成代码实现" class="headerlink" title="VAE人脸生成代码实现"></a>VAE人脸生成代码实现</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><p>整个网络采用CNN的方式，对celeba数据集的$3\times64\times64$的图片经过卷积到$32\times32\times32$到$64\times16\times16$到$128\times8\times8$到$256\times4\times4$到$512\times2\times2$，经过2048到128的全连接层可以得到两个128维的向量，分别是均值和$log(\sigma^2)$，然后重参数化后通过128到2048的全连接层到$512\times2\times2$，再通过反卷积到$256\times4\times4$到$128\times8\times8$到$64\times16\times16$到$32\times32\times32$到$32\times64\times64$，最后通过卷积层到$3\times64\times64$做到图像的重构。</p>
+<p>损失函数选取$BCE+\lambda\times KL$的形式，其中BCE为重构误差，KL为正则化约束，即约束均值和方差接近标准正态分布，保证生成时潜在向量也是从标准正态分布中采样得到的合理性。</p>
+<p><img src="/pic/autoencoder.pkl.png" alt="autoencoder.pkl"></p>
+<h3 id="人脸VAE实现仓库"><a href="#人脸VAE实现仓库" class="headerlink" title="人脸VAE实现仓库"></a>人脸VAE实现仓库</h3><p>基于celeba人脸数据集，详细解析见仓库<a target="_blank" rel="noopener" href="https://github.com/shuoyueli4519/VAETrying">https://github.com/shuoyueli4519/VAETrying</a></p>
+
       
     </div>
 
