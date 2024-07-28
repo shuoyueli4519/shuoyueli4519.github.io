@@ -19,28 +19,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Stable Diffusion的公式推导">
+    <meta name="description" content="VIT基本介绍VIT的论文为An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale，即vision transformer，核心思想是将图片分割为$16\times16$的patches，并将每一个patch投影到固定长度的向量(768维度)，那么一张$224\times224$的图片就可以序列化为$19">
 <meta property="og:type" content="article">
-<meta property="og:title" content="StableDiffusion阅读日记一">
-<meta property="og:url" content="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/index.html">
+<meta property="og:title" content="VIT阅读日记">
+<meta property="og:url" content="http://example.com/2024/07/28/VIT%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/index.html">
 <meta property="og:site_name" content="朔月离的小屋">
-<meta property="og:description" content="Stable Diffusion的公式推导">
+<meta property="og:description" content="VIT基本介绍VIT的论文为An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale，即vision transformer，核心思想是将图片分割为$16\times16$的patches，并将每一个patch投影到固定长度的向量(768维度)，那么一张$224\times224$的图片就可以序列化为$19">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-07-17T08:26:14.000Z">
-<meta property="article:modified_time" content="2024-07-18T02:04:34.199Z">
+<meta property="og:image" content="http://example.com/pic/2024-07-28_09-27.png">
+<meta property="article:published_time" content="2024-07-28T00:55:13.000Z">
+<meta property="article:modified_time" content="2024-07-28T07:09:50.303Z">
 <meta property="article:author" content="朔月离">
 <meta property="article:tag" content="论文阅读">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/pic/2024-07-28_09-27.png">
 
 
-<link rel="canonical" href="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/">
+<link rel="canonical" href="http://example.com/2024/07/28/VIT%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/","path":"2024/07/17/StableDiffusion阅读日记一/","title":"StableDiffusion阅读日记一"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/07/28/VIT%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/","path":"2024/07/28/VIT阅读日记/","title":"VIT阅读日记"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>StableDiffusion阅读日记一 | 朔月离的小屋</title>
+<title>VIT阅读日记 | 朔月离的小屋</title>
   
 
 
@@ -99,7 +101,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -112,6 +114,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#VIT%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">VIT基本介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E5%85%B3%E9%94%AE%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">几个关键问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VIT%E5%AE%9E%E7%8E%B0%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">VIT实现图像分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.1.</span> <span class="nav-text">网络结构介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VIT%E5%9C%A8cifar10%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8B%E5%AE%9E%E7%8E%B0%E5%88%86%E7%B1%BB%E5%8A%9F%E8%83%BD%E4%BB%93%E5%BA%93"><span class="nav-number">2.2.</span> <span class="nav-text">VIT在cifar10数据集下实现分类功能仓库</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -162,7 +165,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/28/VIT%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -175,12 +178,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="StableDiffusion阅读日记一 | 朔月离的小屋">
+      <meta itemprop="name" content="VIT阅读日记 | 朔月离的小屋">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          StableDiffusion阅读日记一
+          VIT阅读日记
         </h1>
 
         <div class="post-meta-container">
@@ -190,24 +193,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2024-07-17 16:26:14" itemprop="dateCreated datePublished" datetime="2024-07-17T16:26:14+08:00">2024-07-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-18 10:04:34" itemprop="dateModified" datetime="2024-07-18T10:04:34+08:00">2024-07-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/StableDiffusion%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">StableDiffusion系列</span></a>
-        </span>
+      <time title="Created: 2024-07-28 08:55:13 / Modified: 15:09:50" itemprop="dateCreated datePublished" datetime="2024-07-28T08:55:13+08:00">2024-07-28</time>
     </span>
 
   
@@ -219,8 +207,17 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>Stable Diffusion的公式推导</p>
-
+    <div class="post-body" itemprop="articleBody"><h2 id="VIT基本介绍"><a href="#VIT基本介绍" class="headerlink" title="VIT基本介绍"></a>VIT基本介绍</h2><p>VIT的论文为<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a>，即vision transformer，核心思想是将图片分割为$16\times16$的patches，并将每一个patch投影到固定长度的向量(768维度)，那么一张$224\times224$的图片就可以序列化为$196\times768$的tokens，共196个维度为768的tokens，并在序列头上加入cls标记用于分类，共197个tokens，然后可以使用transformer的encoder模块进行tokens的处理，最后将cls这个768维向量投影到类别数量上做softmax后得到每一类的概率，实现分类功能。</p>
+<p><img src="/pic/2024-07-28_09-27.png" alt="2024-07-28_09-27"></p>
+<h3 id="几个关键问题"><a href="#几个关键问题" class="headerlink" title="几个关键问题"></a>几个关键问题</h3><ul>
+<li>Q:为什么需要加入cls标记作为分类标准而不是将所有patches都做线性映射？</li>
+<li>A:最直接的考虑是如果将$196\times768$的patches投影到num_classes上，所需要的全连接参数量过大，不适合做直接映射，同时cls在transformer encoder时其实已经融合了其它位置的patches信息，所表征的图像信息含义是完整的，并且在NLP任务中已经采用了cls作为句子分类的标准，验证了它的可行性。</li>
+<li>Q:为什么在小数据集上(比如cifar-10)VIT的分类准确率远小于类ResnetCNN结构的准确率？</li>
+<li>A:因为CNN有先验知识，一种是局部性，即图片上相邻的区域具有相似的特征；一种是平移不变形，即相同色块在不同位置卷积结果是相同的。而vision transformer结构缺少这种局部性的先验知识，它对局部的处理不像CNN那么细致，所以在小数据集上这种先验知识的作用尤为明显，而当数据集增大后，transformer对全局信息的利用能力可以逐步弥补缺少先验的不足，同时表现出更高的准确率。</li>
+<li>Q:既然CNN相比与Transformer有更好的局部性先验知识，能否将CNN和VIT融合解决VIT的问题？</li>
+<li>A:目前已经有很多相关工作让CNN先提取局部特征后再用VIT来做接下来的工作，比如<strong>TransXNet</strong>等工作，具体并不会接着展开讲，但工作已经存在，可以看看，同时也可以看看<strong>Grad-CAM</strong>，它用对于指定类别的反向梯度来画出特定层下关注的区域，理论依据是当梯度大时即使输入发生微小改变输出也可能发生大幅变化，所以该区域比较重要，那么这个类就更加关心这块区域。</li>
+</ul>
+<h2 id="VIT实现图像分类"><a href="#VIT实现图像分类" class="headerlink" title="VIT实现图像分类"></a>VIT实现图像分类</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><h3 id="VIT在cifar10数据集下实现分类功能仓库"><a href="#VIT在cifar10数据集下实现分类功能仓库" class="headerlink" title="VIT在cifar10数据集下实现分类功能仓库"></a>VIT在cifar10数据集下实现分类功能仓库</h3>
     </div>
 
     
@@ -236,11 +233,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" rel="prev" title="VAE阅读日记">
+                  <i class="fa fa-angle-left"></i> VAE阅读日记
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" rel="next" title="VAE阅读日记">
-                  VAE阅读日记 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>

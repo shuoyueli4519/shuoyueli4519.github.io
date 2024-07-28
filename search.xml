@@ -49,4 +49,22 @@
         <tag>论文阅读</tag>
       </tags>
   </entry>
+  <entry>
+    <title>VIT阅读日记</title>
+    <url>/2024/07/28/VIT%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="VIT基本介绍"><a href="#VIT基本介绍" class="headerlink" title="VIT基本介绍"></a>VIT基本介绍</h2><p>VIT的论文为<a href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a>，即vision transformer，核心思想是将图片分割为$16\times16$的patches，并将每一个patch投影到固定长度的向量(768维度)，那么一张$224\times224$的图片就可以序列化为$196\times768$的tokens，共196个维度为768的tokens，并在序列头上加入cls标记用于分类，共197个tokens，然后可以使用transformer的encoder模块进行tokens的处理，最后将cls这个768维向量投影到类别数量上做softmax后得到每一类的概率，实现分类功能。</p>
+<p><img src="/pic/2024-07-28_09-27.png" alt="2024-07-28_09-27"></p>
+<h3 id="几个关键问题"><a href="#几个关键问题" class="headerlink" title="几个关键问题"></a>几个关键问题</h3><ul>
+<li>Q:为什么需要加入cls标记作为分类标准而不是将所有patches都做线性映射？</li>
+<li>A:最直接的考虑是如果将$196\times768$的patches投影到num_classes上，所需要的全连接参数量过大，不适合做直接映射，同时cls在transformer encoder时其实已经融合了其它位置的patches信息，所表征的图像信息含义是完整的，并且在NLP任务中已经采用了cls作为句子分类的标准，验证了它的可行性。</li>
+<li>Q:为什么在小数据集上(比如cifar-10)VIT的分类准确率远小于类ResnetCNN结构的准确率？</li>
+<li>A:因为CNN有先验知识，一种是局部性，即图片上相邻的区域具有相似的特征；一种是平移不变形，即相同色块在不同位置卷积结果是相同的。而vision transformer结构缺少这种局部性的先验知识，它对局部的处理不像CNN那么细致，所以在小数据集上这种先验知识的作用尤为明显，而当数据集增大后，transformer对全局信息的利用能力可以逐步弥补缺少先验的不足，同时表现出更高的准确率。</li>
+<li>Q:既然CNN相比与Transformer有更好的局部性先验知识，能否将CNN和VIT融合解决VIT的问题？</li>
+<li>A:目前已经有很多相关工作让CNN先提取局部特征后再用VIT来做接下来的工作，比如<strong>TransXNet</strong>等工作，具体并不会接着展开讲，但工作已经存在，可以看看，同时也可以看看<strong>Grad-CAM</strong>，它用对于指定类别的反向梯度来画出特定层下关注的区域，理论依据是当梯度大时即使输入发生微小改变输出也可能发生大幅变化，所以该区域比较重要，那么这个类就更加关心这块区域。</li>
+</ul>
+<h2 id="VIT实现图像分类"><a href="#VIT实现图像分类" class="headerlink" title="VIT实现图像分类"></a>VIT实现图像分类</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><h3 id="VIT在cifar10数据集下实现分类功能仓库"><a href="#VIT在cifar10数据集下实现分类功能仓库" class="headerlink" title="VIT在cifar10数据集下实现分类功能仓库"></a>VIT在cifar10数据集下实现分类功能仓库</h3>]]></content>
+      <tags>
+        <tag>论文阅读</tag>
+      </tags>
+  </entry>
 </search>
