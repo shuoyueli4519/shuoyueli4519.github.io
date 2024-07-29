@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://example.com/pic/2024-07-28_09-27.png">
 <meta property="og:image" content="http://example.com/pic/2024-07-29_13-22.png">
 <meta property="article:published_time" content="2024-07-28T00:55:13.000Z">
-<meta property="article:modified_time" content="2024-07-29T05:49:47.043Z">
+<meta property="article:modified_time" content="2024-07-29T05:51:49.302Z">
 <meta property="article:author" content="朔月离">
 <meta property="article:tag" content="论文阅读">
 <meta name="twitter:card" content="summary">
@@ -202,7 +202,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-29 13:49:47" itemprop="dateModified" datetime="2024-07-29T13:49:47+08:00">2024-07-29</time>
+      <time title="Modified: 2024-07-29 13:51:49" itemprop="dateModified" datetime="2024-07-29T13:51:49+08:00">2024-07-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -233,7 +233,7 @@
 <li>Q:既然CNN相比与Transformer有更好的局部性先验知识，能否将CNN和VIT融合解决VIT的问题？</li>
 <li>A:目前已经有很多相关工作让CNN先提取局部特征后再用VIT来做接下来的工作，比如<strong>TransXNet</strong>等工作，具体并不会接着展开讲，但工作已经存在，可以看看，同时也可以看看<strong>Grad-CAM</strong>，它用对于指定类别的反向梯度来画出特定层下关注的区域，理论依据是当梯度大时即使输入发生微小改变输出也可能发生大幅变化，所以该区域比较重要，那么这个类就更加关心这块区域。</li>
 </ul>
-<h2 id="VIT实现图像分类"><a href="#VIT实现图像分类" class="headerlink" title="VIT实现图像分类"></a>VIT实现图像分类</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><p>数据集采用的是cifar10数据集，图片大小是$32\times32$的三通道图片，分割为$4\times4$大小的patches，每个patch为$3\times4\times4$的向量，使用全连接层投影到512维度的向量上，共$64\times512$，再在头上加上cls token，共$65\times512$，经过12层的Transformer encoder得到$65\times512$的融合向量，取cls位置的512维tensor，映射到10类上，最后由softmax得到每一类的概率，实现cifar10数据集上的分类效果。</p>
+<h2 id="VIT实现图像分类"><a href="#VIT实现图像分类" class="headerlink" title="VIT实现图像分类"></a>VIT实现图像分类</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><p>数据集采用的是cifar10数据集，图片大小是$32\times32$的三通道图片，分割为$4\times4$大小的patches，每个patch为$3\times4\times4$的向量，使用全连接层投影到512维度的向量上，共$64\times512$，再在头上加上cls token，共$65\times512$，经过12层的Transformer Encoder层得到$65\times512$的融合向量，取cls位置的512维tensor，映射到10类上，最后由softmax得到每一类的概率，实现cifar10数据集上的分类效果。</p>
 <h3 id="VIT在cifar10数据集下实现分类功能仓库"><a href="#VIT在cifar10数据集下实现分类功能仓库" class="headerlink" title="VIT在cifar10数据集下实现分类功能仓库"></a>VIT在cifar10数据集下实现分类功能仓库</h3><p>基于cifar10数据集，详细解析见仓库<a target="_blank" rel="noopener" href="https://github.com/shuoyueli4519/VITTrying">https://github.com/shuoyueli4519/VITTrying</a></p>
 <p>训练10轮后的准确率:</p>
 <p><img src="/pic/2024-07-29_13-22.png" alt="2024-07-29_13-22"></p>
