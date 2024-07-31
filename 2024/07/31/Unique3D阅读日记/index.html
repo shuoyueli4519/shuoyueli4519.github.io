@@ -19,28 +19,35 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Stable Diffusion的公式推导">
+    <meta name="description" content="Unique3D基本介绍Unique3D的论文为Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image，不同于MvDiffusion，Unique3D的主要目标是从single-view图片中生成高细节纹理特征的3D Mesh模型，pipeline可以总结为先使用multi-view diffusion">
 <meta property="og:type" content="article">
-<meta property="og:title" content="StableDiffusion阅读日记一">
-<meta property="og:url" content="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/index.html">
+<meta property="og:title" content="Unique3D阅读日记">
+<meta property="og:url" content="http://example.com/2024/07/31/Unique3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/index.html">
 <meta property="og:site_name" content="朔月离的小屋">
-<meta property="og:description" content="Stable Diffusion的公式推导">
+<meta property="og:description" content="Unique3D基本介绍Unique3D的论文为Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image，不同于MvDiffusion，Unique3D的主要目标是从single-view图片中生成高细节纹理特征的3D Mesh模型，pipeline可以总结为先使用multi-view diffusion">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-07-17T08:26:14.000Z">
-<meta property="article:modified_time" content="2024-07-18T02:04:34.199Z">
+<meta property="og:image" content="http://example.com/pic/2024-07-31_15-09.png">
+<meta property="og:image" content="http://example.com/pic/2024-07-31_21-03.png">
+<meta property="og:image" content="http://example.com/pic/2024-07-31_21-06.png">
+<meta property="og:image" content="http://example.com/pic/2024-07-31_19-30.png">
+<meta property="og:image" content="http://example.com/pic/2024-07-31_19-30_1.png">
+<meta property="og:image" content="http://example.com/pic/2024-07-31_20-53.png">
+<meta property="article:published_time" content="2024-07-31T06:41:21.000Z">
+<meta property="article:modified_time" content="2024-07-31T13:07:02.260Z">
 <meta property="article:author" content="朔月离">
 <meta property="article:tag" content="论文阅读">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/pic/2024-07-31_15-09.png">
 
 
-<link rel="canonical" href="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/">
+<link rel="canonical" href="http://example.com/2024/07/31/Unique3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/","path":"2024/07/17/StableDiffusion阅读日记一/","title":"StableDiffusion阅读日记一"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/07/31/Unique3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/","path":"2024/07/31/Unique3D阅读日记/","title":"Unique3D阅读日记"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>StableDiffusion阅读日记一 | 朔月离的小屋</title>
+<title>Unique3D阅读日记 | 朔月离的小屋</title>
   
 
 
@@ -99,7 +106,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -112,6 +119,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Unique3D%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Unique3D基本介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Unique3D%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">Unique3D主要模块的实现</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -162,7 +170,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/31/Unique3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -175,12 +183,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="StableDiffusion阅读日记一 | 朔月离的小屋">
+      <meta itemprop="name" content="Unique3D阅读日记 | 朔月离的小屋">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          StableDiffusion阅读日记一
+          Unique3D阅读日记
         </h1>
 
         <div class="post-meta-container">
@@ -190,15 +198,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2024-07-17 16:26:14" itemprop="dateCreated datePublished" datetime="2024-07-17T16:26:14+08:00">2024-07-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-18 10:04:34" itemprop="dateModified" datetime="2024-07-18T10:04:34+08:00">2024-07-18</time>
+      <time title="Created: 2024-07-31 14:41:21 / Modified: 21:07:02" itemprop="dateCreated datePublished" datetime="2024-07-31T14:41:21+08:00">2024-07-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -206,7 +208,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/StableDiffusion%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">StableDiffusion系列</span></a>
+          <a href="/categories/3D%E9%87%8D%E5%BB%BA%E4%B8%8E%E7%94%9F%E6%88%90/" itemprop="url" rel="index"><span itemprop="name">3D重建与生成</span></a>
         </span>
     </span>
 
@@ -219,7 +221,18 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>Stable Diffusion的公式推导</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="Unique3D基本介绍"><a href="#Unique3D基本介绍" class="headerlink" title="Unique3D基本介绍"></a>Unique3D基本介绍</h2><p>Unique3D的论文为<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2405.20343">Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image</a>，不同于MvDiffusion，Unique3D的主要目标是从single-view图片中生成高细节纹理特征的3D Mesh模型，pipeline可以总结为先使用multi-view diffusion model根据输入的single-view input得到正交的multi-view images，然后为multi-view images生成对应的法线贴图，使用多层升级策略提高multi-view images的分辨率，最后提出instant and consistent mesh reconstruction(ISOMER)算法来使用multi-view images和normal maps重建出最后的mesh object。整个方法使用的数据集是Objaverse 3D数据集，包含约50k个3D数据</p>
+<p><img src="/pic/2024-07-31_15-09.png" alt="2024-07-31_15-09"></p>
+<h3 id="Unique3D主要模块的实现"><a href="#Unique3D主要模块的实现" class="headerlink" title="Unique3D主要模块的实现"></a>Unique3D主要模块的实现</h3><p>首先是single-view image到multi-view image的部分，使用的仍然是Stable Diffusion 2D的网络结构，而且这一步会存在图像分辨率低(只有$256\times 256$)导致重建效果差和多视图不一致的情况，前者是采用多级提分辨率策略解决，后者在重建过程时解决；网络采用Stable Diffusion的变体，四个视角的图像同时前向传播并在self attention层做拼接。</p>
+<p>然后是多级提分辨率部分，使用multi-view aware ControlNet接受multi-view images将细节补充至$512\times 512$，最后采用single-view super-resolution model将分辨率提高至$2048\times 2048$，采取分段式的原因是这样可以最大尽度地保留多视图一致的可能性，采用微调 ControlNet-Tile 网络的方式，并且使用IP-Adapter传递输入的图像；对于法线贴图生成方面，采用微调正常的diffusion model来生成法线贴图，然后采用超分辨率的方式将法线贴图的分辨率也提高到$2048\times 2048$；采用Stable Diffusion结构接受RGB图像输出法线贴图。</p>
+<p>然后由于分辨率的提高，文章需要提出新的重建算法来提高效率，提出了ISOMER算法，先是使用正面视图的法线贴图积分，同时引入多次的随机法线旋转然后取平均的方式减少由于法线贴图是生成产生的导致的不合理现象，然后根据这个深度图将正面视图的对应像素映射到空间位置中，同理对后视图相同做法，最后使用泊松重建融合二者，简化到小于2000个面的mesh初始网格，然后根据渲染掩码的Loss $L_{mask}$和法线的Loss $L_{normal}$做为重建Loss来引导mesh顶点的移动，经过多次迭代得到最终的mesh，同时为了防止坍陷的问题，限制顶点只能在法线方向移动来减小loss。</p>
+<p><img src="/pic/2024-07-31_21-03.png" alt="2024-07-31_21-03"></p>
+<p>同时还要解决多视图不一致带来的问题，因为多视角图是生成的，无可避免会发生这个问题，只能想办法缓解这个带来的影响，记$P(v, i)：(R^3, N^+)-&gt;R^2$是mesh顶点v在视图i下的位置，$Col(p, I_m)：(R^2, R^{H\times W\times 3})-&gt;R^3$是图像$I_m$下p点的颜色，$V_M(v,i)：(N^+, N^+)-&gt;{0, 1}$是顶点v在视图i下是否可见，$W_M(v,i)=-cos(N_v^M, N_i^{view})$，$N_v^M$是v在M下的法线，$N_i^{view}$是i视图的方向，最后使用$L_{mask}+L_{ET}$作为细化的Loss来解决多视图不一致的问题。</p>
+<p><img src="/pic/2024-07-31_21-06.png" alt="2024-07-31_21-06"></p>
+<p><img src="/pic/2024-07-31_19-30.png" alt="2024-07-31_19-30"></p>
+<p><img src="/pic/2024-07-31_19-30_1.png" alt="2024-07-31_19-30_1"></p>
+<p><img src="/pic/2024-07-31_20-53.png" alt="2024-07-31_20-53"></p>
+<p>最后根据多视图RGB图像和优化后的mesh生成渲染后的mesh，实现纹理更加细致的效果。</p>
 
     </div>
 
@@ -236,11 +249,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2024/07/30/MvDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" rel="prev" title="MvDiffusion阅读日记">
+                  <i class="fa fa-angle-left"></i> MvDiffusion阅读日记
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" rel="next" title="VAE阅读日记">
-                  VAE阅读日记 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
