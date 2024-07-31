@@ -13,6 +13,43 @@
       </tags>
   </entry>
   <entry>
+    <title>VAE阅读日记</title>
+    <url>/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="VAE的基本介绍"><a href="#VAE的基本介绍" class="headerlink" title="VAE的基本介绍"></a>VAE的基本介绍</h2><p>VAE论文为<a href="https://arxiv.org/abs/1312.6114">VAE:Auto-Encoding Variational Bayes</a>，即变分自编码器，核心思想是学习一个解码器使得潜在正态分布q(z|x)能通过解码器尽可能地还原回真实样本x，此时取样潜在分布z’并通过解码器能生成未知样本x’，整个网络结构就是由编解码器组成，编码器的输出是两个d维向量，每一对值代表均值-方差对，然后通过重新采样并解码得到重建后的图像。</p>
+<p><img src="/pic/2024-07-22_12-28.png" alt="2024-07-22_12-28"></p>
+<h3 id="几个关键问题"><a href="#几个关键问题" class="headerlink" title="几个关键问题:"></a>几个关键问题:</h3><ul>
+<li><p>Q:为什么对于Decoder的输入要进行采样?</p>
+</li>
+<li><p>A:因为当不进行采样时，整个VAE相当于AE，即潜在空间表示z恒为定值而不是一个区间，那么在生成时选择的潜在空间向量z’容易落在学习到的潜在空间表示之外，导致生成的结果质量差，可以认为目的是扩大每一个已知样本潜在空间表示的范围，将其从一个定值变为一个区间。<br/></p>
+<p><img src="/pic/2024-07-22_09-15.png" alt="images"></p>
+</li>
+<li><p>Q:为什么要选择使用重参数化采样?</p>
+</li>
+<li><p>A:如果直接使用采样，即按照均值$\mu$和方差$\sigma$的正态分布进行随机抽样的话，无法对Encoder部分进行方向传播更新参数，所以采用重参数化的方式，即$\mu$+$\sigma$*$\delta$的方式，其中$\delta$为已知的随机抽样取值，那么可以利用链式法则对参数进行更新。<br/></p>
+</li>
+<li><p>Q:为什么要有KL散度这一项作为损失函数的一部分?</p>
+</li>
+<li><p>A:对于只有MSE均方误差作为损失函数的情况，VAE在不断训练的情况下$\sigma$会不断趋于0来减少损失，此时VAE的训练结果会不断向AE靠近，那么就需要KL散度这一项防止这种情况的发生，同时至于为什么要和标准正态分布计算KL散度的原因是在生成过程中对潜在空间向量z’的抽样取值是对标准正态分布进行，所以需要和标准正态分布计算KL散度。</p>
+</li>
+</ul>
+<h3 id="VAE公式推导"><a href="#VAE公式推导" class="headerlink" title="VAE公式推导"></a>VAE公式推导</h3><p>利用最大似然函数的思想，将真实样本数据记作$ x^1 x^2 x^3 … x^n $，产生指定图片x的概率为p(x)，编码器将图片x编码为z的概率为q(z|x)，解码器将潜在空间向量z解码为指定图片x的概率为p(x|z)，p(z|x)为真实后验分布，即对于真实样本数据x，潜在空间向量z的分布情况，但p(z|x)不可知，p(z)为人为假设的潜在空间向量z的先验分布，为了生成时方便所以取标准正态分布，但根据不同的情况可以取其它的先验分布。</p>
+<p>$\begin{flalign}logp(x)&amp;=\int_{z}q(z|x)logp(x)dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)}\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+\int_{z}q(z|x)log(\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x|z)p(z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(z)}{q(z|x)})dz+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\\end{flalign}$</p>
+<p>由于KL散度一定大于0，且p(z|x)不可知，所以$KL(q(z|x)||p(z|x))$并没有加入到损失函数中去，最大似然只去优化$-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz$，此时前一项是让编码器的输出靠近标准正态分布，后一项是让解码器输出指定x的概率尽可能大，所以整个损失函数可以定为KL散度($\frac{1}{2}\sum_{i=1}^{d}(\mu_i^2+\sigma_i^2-log\sigma_i^2-1)$)和MSE均方误差的和。</p>
+<h2 id="VAE人脸生成代码实现"><a href="#VAE人脸生成代码实现" class="headerlink" title="VAE人脸生成代码实现"></a>VAE人脸生成代码实现</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><p>整个网络采用CNN的方式，对celeba数据集的$3\times64\times64$的图片经过卷积到$32\times32\times32$到$64\times16\times16$到$128\times8\times8$到$256\times4\times4$到$512\times2\times2$，经过2048到128的全连接层可以得到两个128维的向量，分别是均值和$log(\sigma^2)$，然后重参数化后通过128到2048的全连接层到$512\times2\times2$，再通过反卷积到$256\times4\times4$到$128\times8\times8$到$64\times16\times16$到$32\times32\times32$到$32\times64\times64$，最后通过卷积层到$3\times64\times64$做到图像的重构。</p>
+<p>损失函数选取$BCE+\lambda\times KL$的形式，其中BCE为重构误差，KL为正则化约束，即约束均值和方差接近标准正态分布，保证生成时潜在向量也是从标准正态分布中采样得到的合理性。</p>
+<p><img src="/pic/autoencoder.pkl.png" alt="autoencoder.pkl"></p>
+<h3 id="人脸VAE实现仓库"><a href="#人脸VAE实现仓库" class="headerlink" title="人脸VAE实现仓库"></a>人脸VAE实现仓库</h3><p>基于celeba人脸数据集，详细解析见仓库<a href="https://github.com/shuoyueli4519/VAETrying">https://github.com/shuoyueli4519/VAETrying</a></p>
+<p>重构效果:<img src="/pic/reconstruction.png" alt="reconstruction"></p>
+<p>生成效果:<img src="/pic/68.png" alt="68"></p>
+]]></content>
+      <categories>
+        <category>VAE系列</category>
+      </categories>
+      <tags>
+        <tag>论文阅读</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>VIT阅读日记</title>
     <url>/2024/07/28/VIT%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
     <content><![CDATA[<h2 id="VIT基本介绍"><a href="#VIT基本介绍" class="headerlink" title="VIT基本介绍"></a>VIT基本介绍</h2><p>VIT的论文为<a href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a>，即vision transformer，核心思想是将图片分割为$16\times16$的patches，并将每一个patch投影到固定长度的向量(768维度)，那么一张$224\times224$的图片就可以序列化为$196\times768$的tokens，共196个维度为768的tokens，并在序列头上加入cls标记用于分类，共197个tokens，然后可以使用transformer的encoder模块进行tokens的处理，最后将cls这个768维向量投影到类别数量上做softmax后得到每一类的概率，实现分类功能。</p>
@@ -52,44 +89,7 @@
 <p><img src="/pic/2024-07-31_09-21.png" alt="2024-07-31_09-21"></p>
 ]]></content>
       <categories>
-        <category>3D</category>
-      </categories>
-      <tags>
-        <tag>论文阅读</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>VAE阅读日记</title>
-    <url>/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="VAE的基本介绍"><a href="#VAE的基本介绍" class="headerlink" title="VAE的基本介绍"></a>VAE的基本介绍</h2><p>VAE论文为<a href="https://arxiv.org/abs/1312.6114">VAE:Auto-Encoding Variational Bayes</a>，即变分自编码器，核心思想是学习一个解码器使得潜在正态分布q(z|x)能通过解码器尽可能地还原回真实样本x，此时取样潜在分布z’并通过解码器能生成未知样本x’，整个网络结构就是由编解码器组成，编码器的输出是两个d维向量，每一对值代表均值-方差对，然后通过重新采样并解码得到重建后的图像。</p>
-<p><img src="/pic/2024-07-22_12-28.png" alt="2024-07-22_12-28"></p>
-<h3 id="几个关键问题"><a href="#几个关键问题" class="headerlink" title="几个关键问题:"></a>几个关键问题:</h3><ul>
-<li><p>Q:为什么对于Decoder的输入要进行采样?</p>
-</li>
-<li><p>A:因为当不进行采样时，整个VAE相当于AE，即潜在空间表示z恒为定值而不是一个区间，那么在生成时选择的潜在空间向量z’容易落在学习到的潜在空间表示之外，导致生成的结果质量差，可以认为目的是扩大每一个已知样本潜在空间表示的范围，将其从一个定值变为一个区间。<br/></p>
-<p><img src="/pic/2024-07-22_09-15.png" alt="images"></p>
-</li>
-<li><p>Q:为什么要选择使用重参数化采样?</p>
-</li>
-<li><p>A:如果直接使用采样，即按照均值$\mu$和方差$\sigma$的正态分布进行随机抽样的话，无法对Encoder部分进行方向传播更新参数，所以采用重参数化的方式，即$\mu$+$\sigma$*$\delta$的方式，其中$\delta$为已知的随机抽样取值，那么可以利用链式法则对参数进行更新。<br/></p>
-</li>
-<li><p>Q:为什么要有KL散度这一项作为损失函数的一部分?</p>
-</li>
-<li><p>A:对于只有MSE均方误差作为损失函数的情况，VAE在不断训练的情况下$\sigma$会不断趋于0来减少损失，此时VAE的训练结果会不断向AE靠近，那么就需要KL散度这一项防止这种情况的发生，同时至于为什么要和标准正态分布计算KL散度的原因是在生成过程中对潜在空间向量z’的抽样取值是对标准正态分布进行，所以需要和标准正态分布计算KL散度。</p>
-</li>
-</ul>
-<h3 id="VAE公式推导"><a href="#VAE公式推导" class="headerlink" title="VAE公式推导"></a>VAE公式推导</h3><p>利用最大似然函数的思想，将真实样本数据记作$ x^1 x^2 x^3 … x^n $，产生指定图片x的概率为p(x)，编码器将图片x编码为z的概率为q(z|x)，解码器将潜在空间向量z解码为指定图片x的概率为p(x|z)，p(z|x)为真实后验分布，即对于真实样本数据x，潜在空间向量z的分布情况，但p(z|x)不可知，p(z)为人为假设的潜在空间向量z的先验分布，为了生成时方便所以取标准正态分布，但根据不同的情况可以取其它的先验分布。</p>
-<p>$\begin{flalign}logp(x)&amp;=\int_{z}q(z|x)logp(x)dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)}\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+\int_{z}q(z|x)log(\frac{q(z|x)}{p(z|x)})dz \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x,z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(x|z)p(z)}{q(z|x)})dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=\int_{z}q(z|x)log(\frac{p(z)}{q(z|x)})dz+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\<br>&amp;=-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz+KL(q(z|x)||p(z|x)) \\\end{flalign}$</p>
-<p>由于KL散度一定大于0，且p(z|x)不可知，所以$KL(q(z|x)||p(z|x))$并没有加入到损失函数中去，最大似然只去优化$-KL(q(z|x)||p(z))+\int_{z}q(z|x)log(p(x|z))dz$，此时前一项是让编码器的输出靠近标准正态分布，后一项是让解码器输出指定x的概率尽可能大，所以整个损失函数可以定为KL散度($\frac{1}{2}\sum_{i=1}^{d}(\mu_i^2+\sigma_i^2-log\sigma_i^2-1)$)和MSE均方误差的和。</p>
-<h2 id="VAE人脸生成代码实现"><a href="#VAE人脸生成代码实现" class="headerlink" title="VAE人脸生成代码实现"></a>VAE人脸生成代码实现</h2><h3 id="网络结构介绍"><a href="#网络结构介绍" class="headerlink" title="网络结构介绍"></a>网络结构介绍</h3><p>整个网络采用CNN的方式，对celeba数据集的$3\times64\times64$的图片经过卷积到$32\times32\times32$到$64\times16\times16$到$128\times8\times8$到$256\times4\times4$到$512\times2\times2$，经过2048到128的全连接层可以得到两个128维的向量，分别是均值和$log(\sigma^2)$，然后重参数化后通过128到2048的全连接层到$512\times2\times2$，再通过反卷积到$256\times4\times4$到$128\times8\times8$到$64\times16\times16$到$32\times32\times32$到$32\times64\times64$，最后通过卷积层到$3\times64\times64$做到图像的重构。</p>
-<p>损失函数选取$BCE+\lambda\times KL$的形式，其中BCE为重构误差，KL为正则化约束，即约束均值和方差接近标准正态分布，保证生成时潜在向量也是从标准正态分布中采样得到的合理性。</p>
-<p><img src="/pic/autoencoder.pkl.png" alt="autoencoder.pkl"></p>
-<h3 id="人脸VAE实现仓库"><a href="#人脸VAE实现仓库" class="headerlink" title="人脸VAE实现仓库"></a>人脸VAE实现仓库</h3><p>基于celeba人脸数据集，详细解析见仓库<a href="https://github.com/shuoyueli4519/VAETrying">https://github.com/shuoyueli4519/VAETrying</a></p>
-<p>重构效果:<img src="/pic/reconstruction.png" alt="reconstruction"></p>
-<p>生成效果:<img src="/pic/68.png" alt="68"></p>
-]]></content>
-      <categories>
-        <category>VAE系列</category>
+        <category>3D重建与生成</category>
       </categories>
       <tags>
         <tag>论文阅读</tag>
