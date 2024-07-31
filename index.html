@@ -119,13 +119,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -147,6 +147,100 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/30/MvDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="朔月离">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/07/30/MvDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" class="post-title-link" itemprop="url">MvDiffusion阅读日记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-07-30 17:04:56" itemprop="dateCreated datePublished" datetime="2024-07-30T17:04:56+08:00">2024-07-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-31 09:22:58" itemprop="dateModified" datetime="2024-07-31T09:22:58+08:00">2024-07-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D/" itemprop="url" rel="index"><span itemprop="name">3D</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="MvDiffusion基本介绍"><a href="#MvDiffusion基本介绍" class="headerlink" title="MvDiffusion基本介绍"></a>MvDiffusion基本介绍</h2><p>MvDiffusion的论文为<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2307.01097">MVDiffusion: Enabling Holistic Multi-view Image Generation with Correspondence-Aware Diffusion</a>，目标是产生符合给定相机模型且全局语义统一的多视角图片，且减缓相机环绕一圈无法闭环的问题。它并没有采用Image Warping + Image Inpainting的方式，即先使用Stable Diffusion生成第一张图片，然后将这张图片扭转一定角度，然后将这张扭转后的图片重新补全，这样就得到一张新视角的图片，不断迭代最后得到Multi-view Image，但这样的做法难免会出现闭环问题。而MvDiffusion采用对Unet加入额外Correspondence-aware Attention机制的方式来学习多视角间的一致性和全局的统一性，文章陈述采用10k张全景图进行训练就得到了以下的效果。</p>
+<p>MvDiffusion实现了三个功能，一是根据文字生成多张不同视角图且拼接后可以得到无缝全景图，二是根据一张透视图能合理外推得到无缝全景图，三是给定无材质的mesh和相机位姿后能生成带有材质的mesh。</p>
+<p><img src="/pic/2024-07-30_17-14.png" alt="2024-07-30_17-14"></p>
+<p><img src="/pic/2024-07-30_17-15.png" alt="2024-07-30_17-15"></p>
+<p><img src="/pic/2024-07-30_17-14_1.png" alt="2024-07-30_17-14_1"></p>
+<h3 id="MvDiffusion主要模块的实现"><a href="#MvDiffusion主要模块的实现" class="headerlink" title="MvDiffusion主要模块的实现"></a>MvDiffusion主要模块的实现</h3><p>在生成过程中，MvDiffusion会同时生成8张视角为90度的$512\times512$的图片，重叠视角大小为45度，并且预训练好的Stable Diffusion部件处于frozen状态，MvDiffusion会在原来的Unet的基础上每一个Up/Down Sample模块后加上CAA模块，并且使用多个共享参数的Unet分支对8张图片进行同时的去噪生成，在CAA中，对第i张特征图记作F，对其它7张特征图记作$F^l$，对源特征图F每一个位置s找目标特征图$F^l$的对应位置$t^l$，并扩展到$K\times K$个位置，记作$t_n^l$，将这些位置返回到原特征图的对应位置$s_n^l$，最后通过cross attention计算出消息M，代表该位置s如何受其它特征图的影响。</p>
+<p><img src="/pic/2024-07-31_08-45.png" alt="2024-07-31_08-45"></p>
+<p><img src="/pic/2024-07-31_08-45_1.png" alt="2024-07-31_08-45_1"></p>
+<h3 id="MvDiffusion三种功能的实现"><a href="#MvDiffusion三种功能的实现" class="headerlink" title="MvDiffusion三种功能的实现"></a>MvDiffusion三种功能的实现</h3><p>在文生全景图的功能下，MvDiffusion可以将关键图像的mask设置为0来做生成；在有参考图的文生全景图功能下，MvDiffusion可以将关键图像的mask设置为1，保证保留参考图内容；在多视图深度到图像生成功能下，先根据两张深度图的KeyFrame产生N张深度图，即一条轨迹下的多张图片，然后使用可以处理深度图的Unet并附加上CAA模块对这些图片进行修复得到彩色图，最后把彩色图贴到mesh上得到带有材质的mesh。</p>
+<p><img src="/pic/2024-07-31_09-21.png" alt="2024-07-31_09-21"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
