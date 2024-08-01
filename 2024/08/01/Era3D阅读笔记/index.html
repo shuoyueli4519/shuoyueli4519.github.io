@@ -19,28 +19,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Stable Diffusion的公式推导">
+    <meta name="description" content="Era3D基本介绍Era3D的论文为Era3D: High-Resolution Multiview Diffusion using Efficient Row-wise Attention，和Unique3D相似，Era3D也是从single-view image中生成得到object mesh，文章将生成效果不理想的一点原因归结于相机先验条件不行，即都是定焦摄像头，所以文章提出了相机预测模块来">
 <meta property="og:type" content="article">
-<meta property="og:title" content="StableDiffusion阅读日记一">
-<meta property="og:url" content="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/index.html">
+<meta property="og:title" content="Era3D阅读笔记">
+<meta property="og:url" content="http://example.com/2024/08/01/Era3D%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="朔月离的小屋">
-<meta property="og:description" content="Stable Diffusion的公式推导">
+<meta property="og:description" content="Era3D基本介绍Era3D的论文为Era3D: High-Resolution Multiview Diffusion using Efficient Row-wise Attention，和Unique3D相似，Era3D也是从single-view image中生成得到object mesh，文章将生成效果不理想的一点原因归结于相机先验条件不行，即都是定焦摄像头，所以文章提出了相机预测模块来">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-07-17T08:26:14.000Z">
-<meta property="article:modified_time" content="2024-07-18T02:04:34.199Z">
+<meta property="og:image" content="http://example.com/pic/2024-08-01_18-31.png">
+<meta property="og:image" content="http://example.com/pic/2024-08-01_18-47.png">
+<meta property="og:image" content="http://example.com/pic/2024-08-01_20-03.png">
+<meta property="article:published_time" content="2024-08-01T06:43:23.000Z">
+<meta property="article:modified_time" content="2024-08-01T12:04:32.359Z">
 <meta property="article:author" content="朔月离">
 <meta property="article:tag" content="论文阅读">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/pic/2024-08-01_18-31.png">
 
 
-<link rel="canonical" href="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/">
+<link rel="canonical" href="http://example.com/2024/08/01/Era3D%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/","path":"2024/07/17/StableDiffusion阅读日记一/","title":"StableDiffusion阅读日记一"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/08/01/Era3D%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/","path":"2024/08/01/Era3D阅读笔记/","title":"Era3D阅读笔记"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>StableDiffusion阅读日记一 | 朔月离的小屋</title>
+<title>Era3D阅读笔记 | 朔月离的小屋</title>
   
 
 
@@ -99,7 +103,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -112,6 +116,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Era3D%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Era3D基本介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Era3D%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">Era3D主要模块的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E6%88%90"><span class="nav-number">1.2.</span> <span class="nav-text">数据集构成</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -162,7 +167,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/17/StableDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0%E4%B8%80/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/01/Era3D%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -175,12 +180,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="StableDiffusion阅读日记一 | 朔月离的小屋">
+      <meta itemprop="name" content="Era3D阅读笔记 | 朔月离的小屋">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          StableDiffusion阅读日记一
+          Era3D阅读笔记
         </h1>
 
         <div class="post-meta-container">
@@ -190,15 +195,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2024-07-17 16:26:14" itemprop="dateCreated datePublished" datetime="2024-07-17T16:26:14+08:00">2024-07-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-18 10:04:34" itemprop="dateModified" datetime="2024-07-18T10:04:34+08:00">2024-07-18</time>
+      <time title="Created: 2024-08-01 14:43:23 / Modified: 20:04:32" itemprop="dateCreated datePublished" datetime="2024-08-01T14:43:23+08:00">2024-08-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -206,7 +205,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/StableDiffusion%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">StableDiffusion系列</span></a>
+          <a href="/categories/3D%E9%87%8D%E5%BB%BA%E4%B8%8E%E7%94%9F%E6%88%90/" itemprop="url" rel="index"><span itemprop="name">3D重建与生成</span></a>
         </span>
     </span>
 
@@ -219,7 +218,13 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>Stable Diffusion的公式推导</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="Era3D基本介绍"><a href="#Era3D基本介绍" class="headerlink" title="Era3D基本介绍"></a>Era3D基本介绍</h2><p>Era3D的论文为<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2405.11616">Era3D: High-Resolution Multiview Diffusion using Efficient Row-wise Attention</a>，和Unique3D相似，Era3D也是从single-view image中生成得到object mesh，文章将生成效果不理想的一点原因归结于相机先验条件不行，即都是定焦摄像头，所以文章提出了相机预测模块来估计输入图像的焦距和仰角；同时由于在做多视图生成融合多视角信息时过往工作是采用dense multi-view attention来做融合的，这会极大地增加时间复杂度，所以文章提出row-wise attention做跨视图信息融合，用于生成高质量的$512\times 512$的multi-view images，进而做3D模型的重建工作。</p>
+<h3 id="Era3D主要模块的实现"><a href="#Era3D主要模块的实现" class="headerlink" title="Era3D主要模块的实现"></a>Era3D主要模块的实现</h3><p>由于大多数模型是根据Objaverse数据集进行训练的，多于多视角的训练输入图片的先验假设是相机的参数是相同的，而且符合Objaverse数据集的参数，这会导致在采用其它参数相机拍摄作为输入图片时，模型会倾向于固有模式而导致结果偏差，所以文章对焦距和倾角都进行了预测，并且规范了多视角输出的倾角和方位角，输出的倾角指定为0，方位角预测的是正负45度、正负90度和180度视角的图片。文章对Unet的隐藏特征H应用全局平均池化然后经过MLP来回归倾角和焦距，然后将倾角和焦距做编码并和时间编码连接，输入到所有的上采样层中进行去噪。</p>
+<p><img src="/pic/2024-08-01_18-31.png" alt="2024-08-01_18-31"></p>
+<p>然后是RMA部分，利用的知识是对视几何的知识，使用真实坐标点P在相机$O_1$下的投影和$O_1$、$O_2$的相对变换可以找到$O_2$下的极线，那么计算注意力时只需要将投影点和极线上的采样点进行融合计算注意力，这样可以加速计算，同时利用正交相机的概念可以加快极线的寻找速度，从而降低整个attention的时间复杂度。</p>
+<p><img src="/pic/2024-08-01_18-47.png" alt="2024-08-01_18-47"></p>
+<h3 id="数据集构成"><a href="#数据集构成" class="headerlink" title="数据集构成"></a>数据集构成</h3><p>在Objaverse数据集上使用正交相机渲染16张方位角均匀分布在四周且倾角为0的正交视图，同时每个方位角渲染3张倾角处于-20到40随机采样的透视视图，焦距也是在所有常用焦距下随机抽取，在新建数据集上通过透视视图来预测出倾角为0的正交视图，即和透视视图不同的不存在近大远小现象的平行光线的成像视图。</p>
+<p><img src="/pic/2024-08-01_20-03.png" alt="2024-08-01_20-03"></p>
 
     </div>
 
@@ -236,11 +241,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2024/07/31/Unique3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" rel="prev" title="Unique3D阅读日记">
+                  <i class="fa fa-angle-left"></i> Unique3D阅读日记
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/07/21/VAE%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" rel="next" title="VAE阅读日记">
-                  VAE阅读日记 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
