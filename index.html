@@ -119,7 +119,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -147,6 +147,90 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/02/SV3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="朔月离">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/02/SV3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" class="post-title-link" itemprop="url">SV3D阅读日记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-08-02 14:49:44 / Modified: 17:14:13" itemprop="dateCreated datePublished" datetime="2024-08-02T14:49:44+08:00">2024-08-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D%E9%87%8D%E5%BB%BA%E4%B8%8E%E7%94%9F%E6%88%90/" itemprop="url" rel="index"><span itemprop="name">3D重建与生成</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="SV3D基本介绍"><a href="#SV3D基本介绍" class="headerlink" title="SV3D基本介绍"></a>SV3D基本介绍</h2><p>SV3D的论文是<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2403.12008">SV3D: Novel Multi-view Synthesis and 3D Generation from a Single Image using Latent Video Diffusion</a>，SV3D不同于Era3D和Unique3D，在从single-view image生成出multi-view image的过程中使用的是Stable Video Diffusion Model而不是Stable Image Diffusion Model，目的是希望使用非固定视角的连续轨道视频来产生更加统一的多视图视角图，为接下来的三维重建提供更加准确的信息；同时不同于Era3D，Diffusion Model需要提供准确的相机姿态信息作为先验知识，整个工作称做SV3D的原因是SVD的全名为Stable Video Diffusion；SV3D根据产生的multi-view images使用微调后的NeRF初步建模出3D mesh，并且使用masked score distillation sampling loss来提高不可见部分的重建能力，最后使用DMTet做进一步的mesh细化。</p>
+<h3 id="SV3D主要模块的实现"><a href="#SV3D主要模块的实现" class="headerlink" title="SV3D主要模块的实现"></a>SV3D主要模块的实现</h3><p>SV3D的假设是视频中的每一帧下相机始终对准object的原点，那么任何视点可以由方位角和倾角决定，那么整个模型的输入有single-view image和两个长度为K的方位角序列和倾角序列，输出是K张图片组成的视频。</p>
+<p><img src="/pic/2024-08-02_15-55.png" alt="2024-08-02_15-55"></p>
+<p>条件图片首先经过CLIP Encoder模块作为conditional image输出到Spatial Attn和Temporal Attn模块中，同时它经过VAE Encoder模块拼接到噪声图向量中进行去噪，而方位角和倾角序列经过正弦位置编码后和时间序列编码拼接在一起作为新的时间序列编码输入到residual block中做到角度信息的融合。同时，文章还做了Static和Dynamic Orbits两种视频生成方式，对于Dynamic Orbits Video Generation，对方位角添加随机噪声，对倾角加入不同频率的正弦编码来做动态轨道视频生成。</p>
+<p><img src="/pic/2024-08-02_16-24.png" alt="2024-08-02_16-24"></p>
+<p>等到多视角的视频生成后，提取每一帧图片得到非固定视角的多视角图，开始重建3D mesh，在重建的第一阶段，使用Instant-NGP NeRF重建得到coarse mesh，然后转化为marching cubes，通过加入SDS(score distillation sampling) Loss并通过DMTet算法重建出更加精细的mesh模型。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
