@@ -75,6 +75,27 @@
       </tags>
   </entry>
   <entry>
+    <title>MvDiffusion阅读日记</title>
+    <url>/2024/07/30/MvDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="MvDiffusion基本介绍"><a href="#MvDiffusion基本介绍" class="headerlink" title="MvDiffusion基本介绍"></a>MvDiffusion基本介绍</h2><p>MvDiffusion的论文为<a href="https://arxiv.org/pdf/2307.01097">MVDiffusion: Enabling Holistic Multi-view Image Generation with Correspondence-Aware Diffusion</a>，目标是产生符合给定相机模型且全局语义统一的多视角图片，且减缓相机环绕一圈无法闭环的问题。它并没有采用Image Warping + Image Inpainting的方式，即先使用Stable Diffusion生成第一张图片，然后将这张图片扭转一定角度，然后将这张扭转后的图片重新补全，这样就得到一张新视角的图片，不断迭代最后得到Multi-view Image，但这样的做法难免会出现闭环问题。而MvDiffusion采用对Unet加入额外Correspondence-aware Attention机制的方式来学习多视角间的一致性和全局的统一性，文章陈述采用10k张全景图进行训练就得到了以下的效果。</p>
+<p>MvDiffusion实现了三个功能，一是根据文字生成多张不同视角图且拼接后可以得到无缝全景图，二是根据一张透视图能合理外推得到无缝全景图，三是给定无材质的mesh和相机位姿后能生成带有材质的mesh。</p>
+<p><img src="/pic/2024-07-30_17-14.png" alt="2024-07-30_17-14"></p>
+<p><img src="/pic/2024-07-30_17-15.png" alt="2024-07-30_17-15"></p>
+<p><img src="/pic/2024-07-30_17-14_1.png" alt="2024-07-30_17-14_1"></p>
+<h3 id="MvDiffusion主要模块的实现"><a href="#MvDiffusion主要模块的实现" class="headerlink" title="MvDiffusion主要模块的实现"></a>MvDiffusion主要模块的实现</h3><p>在生成过程中，MvDiffusion会同时生成8张视角为90度的$512\times512$的图片，重叠视角大小为45度，并且预训练好的Stable Diffusion部件处于frozen状态，MvDiffusion会在原来的Unet的基础上每一个Up/Down Sample模块后加上CAA模块，并且使用多个共享参数的Unet分支对8张图片进行同时的去噪生成，在CAA中，对第i张特征图记作F，对其它7张特征图记作$F^l$，对源特征图F每一个位置s找目标特征图$F^l$的对应位置$t^l$，并扩展到$K\times K$个位置，记作$t_n^l$，将这些位置返回到原特征图的对应位置$s_n^l$，最后通过cross attention计算出消息M，代表该位置s如何受其它特征图的影响。</p>
+<p><img src="/pic/2024-07-31_08-45.png" alt="2024-07-31_08-45"></p>
+<p><img src="/pic/2024-07-31_08-45_1.png" alt="2024-07-31_08-45_1"></p>
+<h3 id="MvDiffusion三种功能的实现"><a href="#MvDiffusion三种功能的实现" class="headerlink" title="MvDiffusion三种功能的实现"></a>MvDiffusion三种功能的实现</h3><p>在文生全景图的功能下，MvDiffusion可以将关键图像的mask设置为0来做生成；在有参考图的文生全景图功能下，MvDiffusion可以将关键图像的mask设置为1，保证保留参考图内容；在多视图深度到图像生成功能下，先根据两张深度图的KeyFrame产生N张深度图，即一条轨迹下的多张图片，然后使用可以处理深度图的Unet并附加上CAA模块对这些图片进行修复得到彩色图，最后把彩色图贴到mesh上得到带有材质的mesh。</p>
+<p><img src="/pic/2024-07-31_09-21.png" alt="2024-07-31_09-21"></p>
+]]></content>
+      <categories>
+        <category>3D重建与生成</category>
+      </categories>
+      <tags>
+        <tag>论文阅读</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unique3D阅读日记</title>
     <url>/2024/07/31/Unique3D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
     <content><![CDATA[<h2 id="Unique3D基本介绍"><a href="#Unique3D基本介绍" class="headerlink" title="Unique3D基本介绍"></a>Unique3D基本介绍</h2><p>Unique3D的论文为<a href="https://arxiv.org/pdf/2405.20343">Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image</a>，不同于MvDiffusion，Unique3D的主要目标是从single-view图片中生成高细节纹理特征的3D Mesh模型，pipeline可以总结为先使用multi-view diffusion model根据输入的single-view input得到正交的multi-view images，然后为multi-view images生成对应的法线贴图，使用多层升级策略提高multi-view images的分辨率，最后提出instant and consistent mesh reconstruction(ISOMER)算法来使用multi-view images和normal maps重建出最后的mesh object。整个方法使用的数据集是Objaverse 3D数据集，包含约50k个3D数据</p>
@@ -89,27 +110,6 @@
 <p><img src="/pic/2024-07-31_19-30_1.png" alt="2024-07-31_19-30_1"></p>
 <p><img src="/pic/2024-07-31_20-53.png" alt="2024-07-31_20-53"></p>
 <p>最后根据多视图RGB图像和优化后的mesh生成渲染后的mesh，实现纹理更加细致的效果。</p>
-]]></content>
-      <categories>
-        <category>3D重建与生成</category>
-      </categories>
-      <tags>
-        <tag>论文阅读</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MvDiffusion阅读日记</title>
-    <url>/2024/07/30/MvDiffusion%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="MvDiffusion基本介绍"><a href="#MvDiffusion基本介绍" class="headerlink" title="MvDiffusion基本介绍"></a>MvDiffusion基本介绍</h2><p>MvDiffusion的论文为<a href="https://arxiv.org/pdf/2307.01097">MVDiffusion: Enabling Holistic Multi-view Image Generation with Correspondence-Aware Diffusion</a>，目标是产生符合给定相机模型且全局语义统一的多视角图片，且减缓相机环绕一圈无法闭环的问题。它并没有采用Image Warping + Image Inpainting的方式，即先使用Stable Diffusion生成第一张图片，然后将这张图片扭转一定角度，然后将这张扭转后的图片重新补全，这样就得到一张新视角的图片，不断迭代最后得到Multi-view Image，但这样的做法难免会出现闭环问题。而MvDiffusion采用对Unet加入额外Correspondence-aware Attention机制的方式来学习多视角间的一致性和全局的统一性，文章陈述采用10k张全景图进行训练就得到了以下的效果。</p>
-<p>MvDiffusion实现了三个功能，一是根据文字生成多张不同视角图且拼接后可以得到无缝全景图，二是根据一张透视图能合理外推得到无缝全景图，三是给定无材质的mesh和相机位姿后能生成带有材质的mesh。</p>
-<p><img src="/pic/2024-07-30_17-14.png" alt="2024-07-30_17-14"></p>
-<p><img src="/pic/2024-07-30_17-15.png" alt="2024-07-30_17-15"></p>
-<p><img src="/pic/2024-07-30_17-14_1.png" alt="2024-07-30_17-14_1"></p>
-<h3 id="MvDiffusion主要模块的实现"><a href="#MvDiffusion主要模块的实现" class="headerlink" title="MvDiffusion主要模块的实现"></a>MvDiffusion主要模块的实现</h3><p>在生成过程中，MvDiffusion会同时生成8张视角为90度的$512\times512$的图片，重叠视角大小为45度，并且预训练好的Stable Diffusion部件处于frozen状态，MvDiffusion会在原来的Unet的基础上每一个Up/Down Sample模块后加上CAA模块，并且使用多个共享参数的Unet分支对8张图片进行同时的去噪生成，在CAA中，对第i张特征图记作F，对其它7张特征图记作$F^l$，对源特征图F每一个位置s找目标特征图$F^l$的对应位置$t^l$，并扩展到$K\times K$个位置，记作$t_n^l$，将这些位置返回到原特征图的对应位置$s_n^l$，最后通过cross attention计算出消息M，代表该位置s如何受其它特征图的影响。</p>
-<p><img src="/pic/2024-07-31_08-45.png" alt="2024-07-31_08-45"></p>
-<p><img src="/pic/2024-07-31_08-45_1.png" alt="2024-07-31_08-45_1"></p>
-<h3 id="MvDiffusion三种功能的实现"><a href="#MvDiffusion三种功能的实现" class="headerlink" title="MvDiffusion三种功能的实现"></a>MvDiffusion三种功能的实现</h3><p>在文生全景图的功能下，MvDiffusion可以将关键图像的mask设置为0来做生成；在有参考图的文生全景图功能下，MvDiffusion可以将关键图像的mask设置为1，保证保留参考图内容；在多视图深度到图像生成功能下，先根据两张深度图的KeyFrame产生N张深度图，即一条轨迹下的多张图片，然后使用可以处理深度图的Unet并附加上CAA模块对这些图片进行修复得到彩色图，最后把彩色图贴到mesh上得到带有材质的mesh。</p>
-<p><img src="/pic/2024-07-31_09-21.png" alt="2024-07-31_09-21"></p>
 ]]></content>
       <categories>
         <category>3D重建与生成</category>
@@ -145,6 +145,26 @@
 <p>条件图片首先经过CLIP Encoder模块作为conditional image输出到Spatial Attn和Temporal Attn模块中，同时它经过VAE Encoder模块拼接到噪声图向量中进行去噪，而方位角和倾角序列经过正弦位置编码后和时间序列编码拼接在一起作为新的时间序列编码输入到residual block中做到角度信息的融合。同时，文章还做了Static和Dynamic Orbits两种视频生成方式，对于Dynamic Orbits Video Generation，对方位角添加随机噪声，对倾角加入不同频率的正弦编码来做动态轨道视频生成。</p>
 <p><img src="/pic/2024-08-02_16-24.png" alt="2024-08-02_16-24"></p>
 <p>等到多视角的视频生成后，提取每一帧图片得到非固定视角的多视角图，开始重建3D mesh，在重建的第一阶段，使用Instant-NGP NeRF重建得到coarse mesh，然后转化为marching cubes，通过加入SDS(score distillation sampling) Loss并通过DMTet算法重建出更加精细的mesh模型。</p>
+]]></content>
+      <categories>
+        <category>3D重建与生成</category>
+      </categories>
+      <tags>
+        <tag>论文阅读</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SV4D阅读日记</title>
+    <url>/2024/08/03/SV4D%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="SV4D基本介绍"><a href="#SV4D基本介绍" class="headerlink" title="SV4D基本介绍"></a>SV4D基本介绍</h2><p>SV4D的论文是<a href="https://arxiv.org/pdf/2407.17470">SV4D: Dynamic 3D Content Generation with Multi-Frame and Multi-View Consistency</a>，SV4D不同于SV3D的静态object生成，SV4D希望通过single-view dynamic video来生成dynamic object，文章把dynamic 3D object generation称做4D generation，同时相比与SV3D，SV4D去除了SDS-based loss，不需要通过SDS loss来对不可见区域进行重建。在做dynamic object generation的同时，存在缺少相关的大型数据集和高维表示需要更大的网络参数量的问题，所以SV4D建立了ObjaverseDy数据集，同时提出mixed sampling scheme来处理输入的长视频，还提出view attention和frame attention来对齐不同view下的帧和不同帧序列下的视角。</p>
+<p><img src="/pic/2024-08-03_15-18.png" alt="2024-08-03_15-18"></p>
+<h3 id="SV4D主要模块介绍"><a href="#SV4D主要模块介绍" class="headerlink" title="SV4D主要模块介绍"></a>SV4D主要模块介绍</h3><p>在muti-view generation方面SV4D使用SV3D model，在video generation方面SV4D使用SVD model，整个SV4D的输入是一个具有F帧的视频$J\in R^{F\times D}$，其中$D=3\times H \times W$，还有一个包含V个方位角和V个倾角的摄像头轨迹，输出是$V\times F$的多视角多帧视频。先对输入视频的第一帧采用SV3D生成第一帧图片的多视角图像，将视频和多视角图像作为输入进入整个去噪网络中。</p>
+<p><img src="/pic/2024-08-03_15-30.png" alt="2024-08-03_15-30"></p>
+<p>首先，SV4D将reference video使用CLIP Image Encoder编码后加入到Spatial Attn和View Attn中，同时经过VAE Encoder编码后和noise image concat，方位角和倾角信息和SV3D相同，做正弦编码后加入到Conv Block中，而经过SV3D生成的multi-view images经过VAE Encoder编码后加入Frame Attn中，最后由Unet网络去噪生成多视角多帧视频。</p>
+<p><img src="/pic/2024-08-03_16-00.png" alt="2024-08-03_16-00"></p>
+<p>然而由于GPU显存的限制，过大的帧长会带来更大的存储要求，所以SV4D的最大F设置为5，那么对于inferencce video frame length大于5的视频，需要考虑inference sampling scheme， 首先采样出anchor frames，然后根据每一个anchor frames和F大小来选择帧序列进行去噪预测，同时为了保证帧间平滑性进行一个反向序列的去噪，以此类推，最终得到去噪后的多视角多帧视频，SV4D设置的视角数为8，设置的相机轨迹最好比较均匀保证效果的可靠性。</p>
+<p><img src="/pic/2024-08-03_16-12.png" alt="2024-08-03_16-12"></p>
+<p>最后根据生成的多角度多帧视频，使用dynamic NeRF重建出静态的NeRF object，通过颜色和密度的MLP来重建出volume rendering，同时重建后的优化分两个阶段，一个是对于多视角进行loss的计算并优化，一个是对随机的视角和帧进行loss计算并优化，最后得到固定参数的MLPs，然后多视角多帧视频可以通过dynamic NeRF和两个MLP得到最终的volume rendering。</p>
 ]]></content>
       <categories>
         <category>3D重建与生成</category>
