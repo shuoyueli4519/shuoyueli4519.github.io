@@ -119,13 +119,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -147,6 +147,172 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/27/NeRF%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="朔月离">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/27/NeRF%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" class="post-title-link" itemprop="url">NeRF阅读日记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-08-27 16:11:43 / Modified: 18:47:36" itemprop="dateCreated datePublished" datetime="2024-08-27T16:11:43+08:00">2024-08-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D%E7%94%9F%E6%88%90%E4%B8%8E%E9%87%8D%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">3D生成与重建</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="NeRF基本介绍"><a href="#NeRF基本介绍" class="headerlink" title="NeRF基本介绍"></a>NeRF基本介绍</h2><p>NeRF的论文是<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2003.08934">NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis</a>，不同于Mesh这类的显性3D表示，NeRF是针对特定物体经过多轮训练后得到的固定参数的网络，给定输入后得到的是对应输入的2D图片输出，在不加任何后处理的情况下无法可视化为显性的3D表示，所以陈NeRF是隐性的3D表示。总而言之，NeRF训练过程中整个方法的输入是多张2D图片和对应相机的外参矩阵和内参矩阵，经过前处理后得到5D表示(世界坐标系下某个点的x、y、z和对应的倾角和方位角)，将5D表示输入到8层全链接网络中，输出得到2D表示(世界坐标系下点的颜色和密度，其中密度可以认为是对光线的遮挡程度，如果一个密度大的采样点在密度小的采样点之前，那么图片上的颜色更接近前一个采样点)，通过计算原图和生成图之间的loss来更新网络参数，最终得到特定物体的隐性表示，此时我们输入新的相机视点，可以得到该物体在对应相机视点下的生成图片，做到3D重建任务。</p>
+<p><img src="/pic/2024-08-27_17-08.png" alt="2024-08-27_17-08"></p>
+<h3 id="NeRF主要模块的介绍"><a href="#NeRF主要模块的介绍" class="headerlink" title="NeRF主要模块的介绍"></a>NeRF主要模块的介绍</h3><h4 id="前处理"><a href="#前处理" class="headerlink" title="前处理:"></a>前处理:</h4><p>首先记世界坐标系为w，任意点在坐标系下的三维坐标为$(x_w, y_w, z_w)$，相机光心的三维坐标系为c，物理成像二维平面坐标系(即cmos平面)为n(原点在图片中点)，通用表示物理成像二维平面坐标系(原点在图片左上顶点)为uv坐标系，那么推得公式$(x_n, y_n)=(-(u-w/2), v-h/2)$，$(x_c,y_c,z_c)=(x_n,y_n,-f)$，$(x_w,y_w,z_w)=c2w<em>(x_c,y_c,z_c)$，那么在给定相机外参和内参矩阵、指定对应图片上某一点$(u_1,v_1)$的情况下，我们可以得到这点在世界坐标系下的位置$(x_{w1},y_{w1},z_{w1})$，而相机光心的位置为$(x_{wc},y_{wc},z_{wc})$，那么经过两点的射线可以表示为$(x_{wc},y_{wc},z_{wc})+distance_t</em>normalization(x_{w1}-x_{wo},y_{w1}-y_{wo},z_{w1}-z_{wo})$，然后再在改射线上记$distance_{tnear}=2、distance_{tfar}=6$，在这种情况下均匀采样64个点，得到在世界坐标系下的$N\times 64$个采样点，然后加点噪声使采样点发生小偏移，结合相机姿态组合为5D向量，前处理完毕。</p>
+<h4 id="NeRF网络"><a href="#NeRF网络" class="headerlink" title="NeRF网络"></a>NeRF网络</h4><p>首先引入位置编码来弥补5D向量高频信息不足的问题，$\gamma(p)=(sin(2^0\pi p),cos(2^0\pi p),…,sin(2^{L-1}\pi p),cos(2^{L-1}\pi p))$，p需要归一化到$[-1,1]$，然后对于空间坐标x来说，L=10，那么$\gamma(x)$拼接上初始值就是63D的向量，对于视角坐标d(也是三维表示)，L=4，那么$\gamma(d)$拼接上初始值就是27D的向量，通过下面的8层FC输出颜色和密度值。</p>
+<p><img src="/pic/2024-08-27_18-04.png" alt="2024-08-27_18-04"></p>
+<p>然后通过颜色和密度可以计算出2D图像对应位置的像素颜色，公式如下，$T_i$代表第i个采样点可以透光的可能性，</p>
+<p>$1-exp(-\sigma_i\delta_i)$代表第i个采样点的不透明度，$c_i$是第i个采样点的颜色，$\delta_i$是第i+1个采样点和第i个采样点之间的距离，那么我们累加可以得到2D图片对应像素的颜色。</p>
+<p><img src="/pic/2024-08-27_18-26.png" alt="2024-08-27_18-26"></p>
+<p>同时，NeRF还有细采样过程，根据前面粗采样得到的$w_i=T_i(1-exp(-\sigma_i\delta_i))$来将所有的$w_i$归一化，然后计算概率密度函数PDF，根据PDF重新再采样128个点，做到靠近相机一侧的采样点更多，同时再重复NeRF网络，计算得到最后像素对应的颜色，根据loss优化网络参数，最后做到输入新的相机视点，可以得到生成的2D图像，这样一个物体的3D表示就隐藏在NeRF网络中。</p>
+<h4 id="相机内外参获取"><a href="#相机内外参获取" class="headerlink" title="相机内外参获取"></a>相机内外参获取</h4><p>训练时相机的外参矩阵可以通过colmap、SFM等传统的特征点匹配来获取，即根据所有的训练图片来得到每张图片拍摄相机的外参，这样整个NeRF方法的所有所需参数我们都可以获取，只需要输入多张参考图像即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/17/SyncDreamer%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="朔月离">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 朔月离的小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/17/SyncDreamer%E9%98%85%E8%AF%BB%E6%97%A5%E8%AE%B0/" class="post-title-link" itemprop="url">SyncDreamer阅读日记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-08-17 10:38:04 / Modified: 10:38:54" itemprop="dateCreated datePublished" datetime="2024-08-17T10:38:04+08:00">2024-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D%E9%87%8D%E5%BB%BA%E4%B8%8E%E7%94%9F%E6%88%90/" itemprop="url" rel="index"><span itemprop="name">3D重建与生成</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
