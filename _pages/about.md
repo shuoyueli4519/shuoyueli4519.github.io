@@ -99,7 +99,7 @@ Nan Chen, Mengqi Huang, Zhuowei Chen, **Yang Zheng**, Lei Zhang, Zhendong Mao
 # 💻 Extracurricular Activities
 - *2023.10 - now*, <strong><a href="https://space.bilibili.com/3546595134015939">BiliBili Blogger (NobleAI Channel)</a></strong>
   
-  Member of the NobleAI Discussion Group
+  Member of the NobleAI Discussion Group, mentored by <a href='https://cn-makers.github.io/'>chennan</a>
 
   6,500 followers and 160,000 views.
 
